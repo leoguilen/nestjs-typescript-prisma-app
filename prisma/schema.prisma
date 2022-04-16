@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  Id        String    @default(uuid()) @id
+  Email     String    @unique
+  FirstName String
+  LastName  String
+  CreatedAt DateTime  @default(now())
+
+  Installations Installation[]
+}
+
+model Sensor {
+  Id          String    @default(uuid()) @id
+  Name        String
+  SerialCode  String    @unique
+  CreatedAt   DateTime  @default(now())
+
+  Installations Installation[]
+}
+
+model Installation {
+  Id          String    @default(uuid()) @id
+  CustomerId  String
+  SensorId    String
+  LocalType   String
+  Remarks     String?   @default("")
+  Date        DateTime
+  CreatedAt   DateTime  @default(now())
+
+  MonitoringData InstallationMonitoringData[]
+
+  Customer Customer? @relation(fields: [CustomerId], references: [Id])
+  Sensor Sensor? @relation(fields: [SensorId], references: [Id])
+}
+
+model InstallationMonitoringData {
+  Timestamp DateTime @default(now()) @id
+  InstallationId String
+  MeasurementValue Float
+
+  Installation Installation? @relation(fields: [InstallationId], references: [Id])
+}

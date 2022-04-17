@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PrismaService } from './prisma.service';
+import { ValidationPipe } from '@nestjs/common';
+import { TransformInterceptor } from './transform.interceptor';
 
 declare const module: any;
 
@@ -22,9 +23,8 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   app.enableShutdownHooks();
-
-  const prismaService = app.get(PrismaService);
-  await prismaService.enableShutdownHooks(app);
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   await app.listen(3000);
 

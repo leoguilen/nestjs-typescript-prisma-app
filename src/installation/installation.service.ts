@@ -4,7 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Customer, Installation, Sensor } from '@prisma/client';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateInstallationRequest } from './models/create-installation-request.model';
 
 @Injectable({ scope: Scope.REQUEST })

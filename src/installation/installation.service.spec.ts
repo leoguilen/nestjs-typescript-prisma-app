@@ -1,23 +1,30 @@
 import { InstallationService } from './installation.service';
 import { InstallationLocalType } from './enums/installation-local-type.enum';
-import { PrismaService } from '../prisma.service';
-import { Installation, Customer, Sensor, Prisma } from '@prisma/client';
+import { Installation, Customer, Sensor } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { CreateInstallationRequest } from './models/create-installation-request.model';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { mockDeep } from 'jest-mock-extended';
 
 describe('InstallationService', () => {
   let prismaServiceMock: PrismaService;
   let spy: jest.Mock<any, any>;
 
-  beforeEach(() => {
-    prismaServiceMock = new PrismaService();
-    spy = jest.fn();
-  });
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        InstallationService,
+        {
+          provide: PrismaService,
+          useFactory: () => mockDeep<PrismaService>(),
+        },
+      ],
+    }).compile();
 
-  afterEach(() => {
-    spy.mockReset();
-    spy.mockRestore();
+    prismaServiceMock = await module.resolve(PrismaService);
+    spy = jest.fn();
   });
 
   describe('fetchAllAsync method', () => {
